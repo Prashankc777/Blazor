@@ -55,6 +55,20 @@ namespace WebApplication1.Controllers
             }
         }
 
+        [HttpGet("{search}")]
+        public async Task<ActionResult<IEnumerable<Employee>>> Search(string name, Gender? gender)
+        {
+            try
+            {
+                var result = await _employeeRepository.Search(name, gender);
+                return result.Any() ? (ActionResult<IEnumerable<Employee>>)Ok(result) : NotFound();
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error searching new employee record");
+            }
+        }
 
         [HttpPost]
         public async Task<ActionResult<Employee>> CreateEmployee(Employee employee)
@@ -99,6 +113,25 @@ namespace WebApplication1.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     "Error Updating  employee record");
+            }
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult<Employee>> DeleteEmployee(int id)
+        {
+            try
+            {
+                var employee = await _employeeRepository.GetEmployee(id);
+                if (employee is null)
+                {
+                    return NotFound($"Employee with {id} not found");
+                }
+                return await _employeeRepository.DeleteEmployee(id);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error Deleting  employee record");
             }
         }
 

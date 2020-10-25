@@ -9,12 +9,14 @@ namespace WebApplication1.Modals
 {
     public interface IEmployeeRepository
     {
+
+        Task<IEnumerable<Employee>> Search(string name, Gender? gender);
         Task<IEnumerable<Employee>> GetEmployees();
         Task<Employee> GetEmployee(int employeeId);
         Task<Employee> GetEmail(string email);
         Task<Employee> AddEmployee(Employee employee);
         Task<Employee> UpdateEmployee(Employee employee);
-        void DeleteEmployee(int employeeId);
+        Task<Employee> DeleteEmployee(int employeeId);
     }
 
 
@@ -26,6 +28,22 @@ namespace WebApplication1.Modals
         public EmployeeRepository(AppDbcontext appDbcontext)
         {
             appDbContext = appDbcontext;
+        }
+
+        public async Task<IEnumerable<Employee>> Search(string name, Gender? gender)
+        {
+            IQueryable<Employee> query = appDbContext.Employees;
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(e => e.FirstName.Contains(name) || e.LastName.Contains(name));
+            }
+
+            if (gender != null)
+            {
+                query = query.Where(e => e.Gender == gender);
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task<IEnumerable<Employee>> GetEmployees()
@@ -71,13 +89,14 @@ namespace WebApplication1.Modals
 
         }
 
-        public async void DeleteEmployee(int employeeId)
+        public async Task<Employee> DeleteEmployee(int employeeId)
         {
             var result = await appDbContext.Employees
                 .FirstOrDefaultAsync(e => e.EmployeeId == employeeId);
-            if (result == null) return;
+            if (result == null) return null;
             appDbContext.Employees.Remove(result);
             await appDbContext.SaveChangesAsync();
+            return result;
 
         }
     }
