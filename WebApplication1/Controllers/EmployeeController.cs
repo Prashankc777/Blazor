@@ -35,7 +35,7 @@ namespace WebApplication1.Controllers
 
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<Employee>> GetEmployee(int id)
         {
             try
@@ -44,17 +44,42 @@ namespace WebApplication1.Controllers
                 if (result == null)
                 {
                     return NotFound();
-                }  
+                }
                 return result;
 
 
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                return StatusCode(statusCode: StatusCodes.Status500InternalServerError, "Error retrieving the data");
             }
         }
+
+
+        [HttpPost]
+        public async Task<ActionResult<Employee>> CreateEmployee(Employee employee)
+        {
+            try
+            {
+                if (employee == null)
+                    return BadRequest();
+
+                var createdEmployee = await _employeeRepository.AddEmployee(employee);
+
+                return CreatedAtAction(nameof(GetEmployee),
+                    new { id = createdEmployee.EmployeeId }, createdEmployee);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error creating new employee record");
+            }
+        }
+
+
+
+
+
 
 
     }
