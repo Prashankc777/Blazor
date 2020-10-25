@@ -62,7 +62,6 @@ namespace WebApplication1.Controllers
             try
             {
                 if (employee is null) return BadRequest();
-
                 var emailCheck = _employeeRepository.GetEmail(employee.Email);
                 if (emailCheck is null)
                 {
@@ -70,7 +69,6 @@ namespace WebApplication1.Controllers
                     return CreatedAtAction(nameof(GetEmployee),
                         new { id = createdEmployee.EmployeeId }, createdEmployee);
                 }
-
                 ModelState.AddModelError("Email", "Employee already in use");
                 return BadRequest(employee);
             }
@@ -78,6 +76,29 @@ namespace WebApplication1.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     "Error creating new employee record");
+            }
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult<Employee>> UpdateEmployee(int id, Employee employee)
+        {
+            try
+            {
+                if (id != employee.EmployeeId)
+                {
+                    return BadRequest("Employee Id Mismatch");
+                }
+                var employeeToUpdate = await _employeeRepository.GetEmployee(id);
+                if (employeeToUpdate is null)
+                {
+                    return NotFound($"Employee with name {employee.FirstName} not found");
+                }
+                return await _employeeRepository.UpdateEmployee(employee);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error Updating  employee record");
             }
         }
 
