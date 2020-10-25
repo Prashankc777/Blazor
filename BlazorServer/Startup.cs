@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BlazorServer.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
@@ -28,6 +29,10 @@ namespace BlazorServer
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddHttpClient<IEmployeeServices, EmployeeServices>(client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:44388/");
+            });
 
         }
 
