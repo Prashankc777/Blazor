@@ -11,6 +11,7 @@ namespace WebApplication1.Modals
     {
         Task<IEnumerable<Employee>> GetEmployees();
         Task<Employee> GetEmployee(int employeeId);
+        Task<Employee> GetEmail(string email);
         Task<Employee> AddEmployee(Employee employee);
         Task<Employee> UpdateEmployee(Employee employee);
         void DeleteEmployee(int employeeId);
@@ -36,6 +37,11 @@ namespace WebApplication1.Modals
         {
             return await appDbContext.Employees
                 .FirstOrDefaultAsync(e => e.EmployeeId == employeeId);
+        }
+
+        public async Task<Employee> GetEmail(string email)
+        {
+            return await appDbContext.Employees.FirstOrDefaultAsync(x => x.Email == email);
         }
 
         public async Task<Employee> AddEmployee(Employee employee)

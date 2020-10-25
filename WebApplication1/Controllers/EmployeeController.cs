@@ -61,13 +61,18 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                if (employee == null)
-                    return BadRequest();
+                if (employee is null) return BadRequest();
 
-                var createdEmployee = await _employeeRepository.AddEmployee(employee);
+                var emailCheck = _employeeRepository.GetEmail(employee.Email);
+                if (emailCheck is null)
+                {
+                    var createdEmployee = await _employeeRepository.AddEmployee(employee);
+                    return CreatedAtAction(nameof(GetEmployee),
+                        new { id = createdEmployee.EmployeeId }, createdEmployee);
+                }
 
-                return CreatedAtAction(nameof(GetEmployee),
-                    new { id = createdEmployee.EmployeeId }, createdEmployee);
+                ModelState.AddModelError("Email", "Employee already in use");
+                return BadRequest(employee);
             }
             catch (Exception)
             {
