@@ -4,5 +4,9 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Employeemanagement.modals\Employeemanagement.modals.csproj" />
+  </ItemGroup>
+
 
 </Project>
