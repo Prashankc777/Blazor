@@ -30,6 +30,9 @@ namespace WebApplication1
             services.AddDbContext<AppDbcontext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DBConnection")));
 
+            services.AddScoped<IDepatmentRepository, DepartmentRepository>();
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
             services.AddControllers();
         }
 
